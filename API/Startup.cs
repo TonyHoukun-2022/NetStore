@@ -1,4 +1,5 @@
 using API.Data;
+using API.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -41,11 +42,17 @@ namespace API
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         // Middlewares
+        //Middleware ordering
+        //exception handler -> Routing -> CORS -> authenticate -> authorize -> custom middlewares -> endpoint
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //use customise exception middleware
+            app.UseMiddleware<ExceptionMiddleware>();
+            
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //exception handler
+                // app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPIv5 v1"));
             }
@@ -61,6 +68,8 @@ namespace API
             });
 
             app.UseAuthorization();
+
+            //place to put custom middlewares
 
             //middleware for mapping endpoints to different controllers
             app.UseEndpoints(endpoints =>

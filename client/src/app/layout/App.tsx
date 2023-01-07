@@ -7,7 +7,11 @@ import HomePage from "../../features/home/HomePage";
 import ProductDetails from "../../features/catalog/ProductDetails";
 import AboutPage from "../../features/about/AboutPage";
 import ContactPage from "../../features/contact/ContactPage";
+import { ToastContainer } from "react-toastify";
 // import Header from "./Header";
+import 'react-toastify/dist/ReactToastify.css'
+import ServerError from "../errors/ServerError";
+import NotFound from "../errors/NotFound";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -28,7 +32,7 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      {/* for deleting all default padding and margin */}
+      <ToastContainer position="bottom-right" hideProgressBar />
       <CssBaseline />
       <Header
         darkMode={darkMode}
@@ -42,8 +46,12 @@ function App() {
           <Route path="catalog/:id" element={<ProductDetails />} />
           <Route path='about' element={<AboutPage />} />
           <Route path='contact' element={<ContactPage />} />
+          <Route path='server-error' element={<ServerError />} />
+          <Route path='*' element={<NotFound />} />
         </Routes>
       </Container>
+      {/* for deleting all default padding and margin */}
+
     </ThemeProvider>
   );
 }

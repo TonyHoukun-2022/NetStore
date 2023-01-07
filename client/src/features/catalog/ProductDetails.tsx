@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom"
-import { Divider, Grid, TableBody, TableCell, TableContainer, TableRow, Typography, Paper, Table } from "@mui/material"
-import axios from "axios";
+import { Divider, Grid, TableBody, TableCell, TableContainer, TableRow, Typography, Table } from "@mui/material"
 import { Product } from "../../app/models/product";
+import requestAgent from "../../app/api/agent";
+import NotFound from "../../app/errors/NotFound";
+import LoadingComponent from "../../app/layout/LoadingComponent";
 
 const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -10,22 +12,14 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setLoading(true)
-        const { data: product } = await axios.get(`http://localhost:5000/api/products/${id}`)
-        setProduct(product)
-      } catch (error) {
-        console.log(error)
-      }
-      setLoading(false)
-    }
-    fetchProduct()
+    setLoading(true)
+    requestAgent.Catalog.getProductDetailL(+id!).then(product => setProduct(product)).catch(error => console.log(error.response)).finally(() => setLoading(false))
+
   }, [id])
 
-  if (loading) return <h3>loading</h3>
+  if (loading) return <LoadingComponent message="loading product" />
 
-  if (!product) return <h3>Not product found</h3>
+  if (!product) return <NotFound />
 
   return (
     <Grid container spacing={6}>
