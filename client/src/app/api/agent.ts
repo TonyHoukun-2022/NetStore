@@ -1,4 +1,4 @@
-import axios, { AxiosResponse, AxiosError } from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { toast } from 'react-toastify'
 import { history } from '../..'
 
@@ -6,6 +6,8 @@ import { history } from '../..'
 const delay = () => new Promise((resolve) => setTimeout(resolve, 500))
 
 axios.defaults.baseURL = 'http://localhost:5000/api/'
+//allow user set cookie
+axios.defaults.withCredentials = true
 
 const resBody = (res: AxiosResponse) => res.data
 
@@ -69,6 +71,13 @@ const Catalog = {
   getProductDetailL: (id: number) => requests.get(`products/${id}`),
 }
 
+//basket requests
+const Basket = {
+  get: () => requests.get('basket'),
+  addItem: (productId: number, quantity = 1) => requests.post(`basket?productId=${productId}&quantity=${quantity}`, {}),
+  removeItem: (productId: number, quantity = 1) => requests.delete(`basket?productId=${productId}&quantity=${quantity}`),
+}
+
 //TestErrors
 const TestErrors = {
   get400Error: () => requests.get('buggy/bad-request'),
@@ -81,6 +90,7 @@ const TestErrors = {
 const requestAgent = {
   Catalog,
   TestErrors,
+  Basket,
 }
 
 export default requestAgent

@@ -64,7 +64,8 @@ namespace API
             //useCors middleware should put just after useRouting
             app.UseCors(opt => 
             {
-              opt.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+              //allowCredentials method accepts user post cookies from other domains
+              opt.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000");
             });
 
             app.UseAuthorization();

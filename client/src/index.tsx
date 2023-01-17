@@ -6,6 +6,7 @@ import App from './app/layout/App';
 import reportWebVitals from './reportWebVitals';
 import { unstable_HistoryRouter as HistoryRouter } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
+import { StoreProvider } from './app/context/StoreContext';
 
 //allow access history obj outside of react comp
 export const history = createBrowserHistory()
@@ -17,7 +18,10 @@ root.render(
   <React.StrictMode>
     {/* @ts-expect-error */}
     <HistoryRouter history={history}>
-      <App />
+      {/* Context  */}
+      <StoreProvider>
+        <App />
+      </StoreProvider>
     </HistoryRouter>
   </React.StrictMode>
 );
