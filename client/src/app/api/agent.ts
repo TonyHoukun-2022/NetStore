@@ -68,7 +68,7 @@ const requests = {
 const Catalog = {
   //url => baseUrl + 'products'
   listProducts: () => requests.get('products'),
-  getProductDetailL: (id: number) => requests.get(`products/${id}`),
+  getProductDetail: (id: number) => requests.get(`products/${id}`),
 }
 
 //basket requests

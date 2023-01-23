@@ -7,6 +7,13 @@ import reportWebVitals from './reportWebVitals';
 import { unstable_HistoryRouter as HistoryRouter } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { StoreProvider } from './app/context/StoreContext';
+// import { configureStore } from './app/store/configureStore';
+import { store } from './app/store/configureStore';
+import { Provider } from 'react-redux';
+
+// const store = configureStore()
+
+
 
 //allow access history obj outside of react comp
 export const history = createBrowserHistory()
@@ -18,9 +25,12 @@ root.render(
   <React.StrictMode>
     {/* @ts-expect-error */}
     <HistoryRouter history={history}>
-      {/* Context  */}
+      {/* Context*/}
       <StoreProvider>
-        <App />
+        {/* Redux provider */}
+        <Provider store={store}>
+          <App />
+        </Provider>
       </StoreProvider>
     </HistoryRouter>
   </React.StrictMode>

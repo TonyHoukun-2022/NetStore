@@ -13,14 +13,20 @@ import 'react-toastify/dist/ReactToastify.css'
 import ServerError from "../errors/ServerError";
 import NotFound from "../errors/NotFound";
 import BasketPage from "../../features/basket/BasketPage";
-import { useStoreContext } from "../context/StoreContext";
+// import { useStoreContext } from "../context/StoreContext";
 import { getCookie } from "../utils/util";
 import requestAgent from "../api/agent";
 import LoadingComponent from "./LoadingComponent";
 import CheckoutPage from "../../features/checkout/CheckoutPage";
+import { useAppDispatch } from "../store/configureStore";
+import { setBasket } from "../../features/basket/BasketSlice";
 
 function App() {
-  const { setBasket } = useStoreContext()
+  /** use context */
+  // const { setBasket } = useStoreContext()
+
+  /** use redux/toolkit */
+  const dispatch = useAppDispatch()
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -28,12 +34,16 @@ function App() {
     if (buyerId) {
       setLoading(true)
       requestAgent.Basket.get()
-        //set basket to app context
-        .then(basket => setBasket(basket))
+        /** set basket to app context */
+        // .then(basket => setBasket(basket))
+
+        /** set basket with redux */
+        //dispatch(action(payload))
+        .then(basket => dispatch(setBasket(basket)))
         .catch(error => console.log(error))
         .finally(() => setLoading(false))
     }
-  }, [setBasket])
+  }, [dispatch])
 
   const [darkMode, setDarkMode] = useState(false);
   const paletteType = darkMode ? 'dark' : 'light'
@@ -56,6 +66,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <ToastContainer position="bottom-right" hideProgressBar />
+      {/* for deleting all default padding and margin */}
       <CssBaseline />
       <Header
         darkMode={darkMode}
@@ -75,8 +86,6 @@ function App() {
           <Route path='*' element={<NotFound />} />
         </Routes>
       </Container>
-      {/* for deleting all default padding and margin */}
-
     </ThemeProvider>
   );
 }
