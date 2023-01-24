@@ -28,6 +28,7 @@ export type RootState = ReturnType<typeof store.getState>
 
 export type AppDispatch = typeof store.dispatch
 
+/** defind typed useDispatch and useSelector, so no need to define it when used in comp */
 //define a type of useAppDispatch hook that it return a dispatch which knows thunk
 export const useAppDispatch = () => useDispatch<AppDispatch>()
 //define type of useAppSelector

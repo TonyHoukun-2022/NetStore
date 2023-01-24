@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios'
 import { toast } from 'react-toastify'
 import { history } from '../..'
+import { PaginatedResponse } from '../models/pagination'
 
 //mocking slow response (for testing purpose)
 const delay = () => new Promise((resolve) => setTimeout(resolve, 500))
@@ -17,7 +18,14 @@ axios.interceptors.response.use(
     // Any status code that lie within the range of 2xx cause this function to trigger
     //slow connection for testing loading
     await delay()
-    // Do something with response data
+    //pagination
+    //shoud use sml case for reading header name
+    const pagination = response.headers['pagination']
+    if (pagination) {
+      response.data = new PaginatedResponse(response.data, JSON.parse(pagination))
+      // console.log(response)
+      return response
+    }
     return response
   },
   (error) => {
@@ -56,9 +64,15 @@ axios.interceptors.response.use(
   }
 )
 
+/**
+ * 
+   const res = await axios.get('https://httpbin.org/get', { params: { answer: 42 } });
+   =>
+   axios.get('https://httpbin.org/get?answer=42')`
+ */
 //request helper
 const requests = {
-  get: (url: string) => axios.get(url).then(resBody),
+  get: (url: string, params?: URLSearchParams) => axios.get(url, { params }).then(resBody),
   post: (url: string, body: {}) => axios.post(url, body).then(resBody),
   put: (url: string, body: {}) => axios.put(url, body).then(resBody),
   delete: (url: string) => axios.delete(url).then(resBody),
@@ -67,8 +81,9 @@ const requests = {
 //catalog requests
 const Catalog = {
   //url => baseUrl + 'products'
-  listProducts: () => requests.get('products'),
+  listProducts: (params: URLSearchParams) => requests.get('products', params),
   getProductDetail: (id: number) => requests.get(`products/${id}`),
+  fetchFilters: () => requests.get('products/filters'),
 }
 
 //basket requests
