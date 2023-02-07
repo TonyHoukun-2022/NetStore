@@ -6,6 +6,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { basketSlice } from '../../features/basket/BasketSlice'
 import { catalogSlice } from '../../features/catalog/CatalogSlice'
 import { accountSlice } from '../../features/account/AccountSlice'
+import { orderSlice } from '../../features/orders/orderSlice'
 
 /**
  * Store creator for old-style redux
@@ -23,6 +24,7 @@ export const store = configureStore({
     basket: basketSlice.reducer,
     catalog: catalogSlice.reducer,
     account: accountSlice.reducer,
+    orders: orderSlice.reducer,
   },
 })
 

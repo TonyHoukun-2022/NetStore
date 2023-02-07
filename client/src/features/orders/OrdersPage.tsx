@@ -1,28 +1,49 @@
 import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Button } from "@mui/material"
 import { useEffect, useState } from "react"
-import requestAgent from "../../app/api/agent"
 import { Order } from "../../app/models/order"
 import LoadingComponent from "../../app/layout/LoadingComponent"
 import { currencyFormat } from "../../app/utils/util"
 import OrderDetailed from "./OrderDetail"
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore"
+import { fetchOrdersAsync, orderSelector } from "./orderSlice"
 
 
 const OrdersPage = () => {
-  const [orders, setOrders] = useState<Order[] | null>(null)
-  const [loading, setLoading] = useState(false)
+  // const [orders, setOrders] = useState<Order[] | null>(null)
+  // const [loading, setLoading] = useState(false)
   const [selectedOrderNumber, setSelectedOrderNumber] = useState(0)
 
+  // useEffect(() => {
+  //   setLoading(true)
+  //   requestAgent.Orders.list()
+  //     .then(orders => setOrders(orders))
+  //     .catch(error => console.log(error))
+  //     .finally(() => setLoading(false))
+  // }, [])
+
+  // if (loading) return <LoadingComponent message="loading orders ..." />
+
+  // //if an order has selected
+  // if (selectedOrderNumber > 0) return (
+  //   <OrderDetailed
+  //     order={orders?.find(o => o.id === selectedOrderNumber)!}
+  //     setSelectedOrder={setSelectedOrderNumber}
+  //   />
+  // )
+
+  const { ordersLoaded, status } = useAppSelector(state => state.orders)
+  const orders = useAppSelector(orderSelector.selectAll)
+  const dispatch = useAppDispatch()
+
   useEffect(() => {
-    setLoading(true)
-    requestAgent.Orders.list()
-      .then(orders => setOrders(orders))
-      .catch(error => console.log(error))
-      .finally(() => setLoading(false))
+    if (!ordersLoaded) {
+      dispatch(fetchOrdersAsync())
+    }
   }, [])
 
-  if (loading) return <LoadingComponent message="loading orders ..." />
+  if (status.includes('pending')) return <LoadingComponent message="orders are loading ..." />
 
-  //if an order has selected
+  // //if an order has selected
   if (selectedOrderNumber > 0) return (
     <OrderDetailed
       order={orders?.find(o => o.id === selectedOrderNumber)!}

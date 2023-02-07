@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../store/configureStore';
 import { signOut } from '../../features/account/AccountSlice';
 import { clearBasket } from '../../features/basket/BasketSlice';
 import { Link } from 'react-router-dom';
+import { clearOrders } from '../../features/orders/orderSlice';
 
 const SignedInMenu = () => {
   const dispatch = useAppDispatch()
@@ -42,6 +43,7 @@ const SignedInMenu = () => {
           onClick={() => {
             dispatch(signOut())
             dispatch(clearBasket())
+            dispatch(clearOrders())
           }}>
           Logout
         </MenuItem>

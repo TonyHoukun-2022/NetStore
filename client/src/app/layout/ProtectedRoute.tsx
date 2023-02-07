@@ -3,7 +3,8 @@ import { useAppSelector } from "../store/configureStore";
 
 export const ProtectedRoutes = () => {
   const location = useLocation();
-  const { user } = useAppSelector((state) => state.account);
+  // const { user } = useAppSelector((state) => state.account);
+  const user = localStorage.getItem('user')
 
   return !user ? (
     <Navigate replace to="/login" state={{ from: location }} />
