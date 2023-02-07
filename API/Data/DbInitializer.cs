@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using API.Entities;
+using API.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace API.Data
 {
@@ -9,7 +12,32 @@ namespace API.Data
     {
         //only static methods allowed in static class
         //static method, return void
-        public static void Initialize(StoreContext context) {
+        public static async Task  Initialize(StoreContext context, UserManager<User> userManager) {
+
+          //if no user in db yet
+          if(!userManager.Users.Any())
+          {
+            //create a admin & member user
+            var admin = new User
+            {
+              UserName = "tony",
+              Email = "tony@test.com"
+            };
+
+            await userManager.CreateAsync(admin,"Pa$$w0rd");
+            await userManager.AddToRolesAsync(admin, new[] {"Member", "Admin"});
+
+            //create a member user
+            var user = new User
+            {
+              UserName = "kathy",
+              Email = "kathy@test.com"
+            };
+
+            await userManager.CreateAsync(user,"Pa$$w0rd");
+            await userManager.AddToRoleAsync(user, "Member");
+          }
+
           //if db has any product, skip out
           if(context.Products.Any()) return;
 

@@ -1,7 +1,8 @@
-import axios, { AxiosResponse } from 'axios'
+import axios, { AxiosHeaders, AxiosResponse } from 'axios'
 import { toast } from 'react-toastify'
 import { history } from '../..'
 import { PaginatedResponse } from '../models/pagination'
+import { store } from '../store/configureStore'
 
 //mocking slow response (for testing purpose)
 const delay = () => new Promise((resolve) => setTimeout(resolve, 500))
@@ -12,13 +13,16 @@ axios.defaults.withCredentials = true
 
 const resBody = (res: AxiosResponse) => res.data
 
-//set axios interceptor
+//send token along with request
+axios.interceptors.request.use((config) => {
+  const token = store.getState().account.user?.token
+  if (token && config.headers) (config.headers as AxiosHeaders).set('Authorization', `Bearer ${token}`)
+  return config
+})
+
+//set axios interceptor for response
 axios.interceptors.response.use(
   async (response: AxiosResponse) => {
-    // Any status code that lie within the range of 2xx cause this function to trigger
-    //slow connection for testing loading
-    await delay()
-    //pagination
     //shoud use sml case for reading header name
     const pagination = response.headers['pagination']
     if (pagination) {
@@ -93,6 +97,20 @@ const Basket = {
   removeItem: (productId: number, quantity = 1) => requests.delete(`basket?productId=${productId}&quantity=${quantity}`),
 }
 
+//account requests for login and register
+const Account = {
+  login: (values: any) => requests.post('account/login', values),
+  register: (values: any) => requests.post('account/register', values),
+  getCurrentUser: () => requests.get('account/currentuser'),
+  getAddress: () => requests.get('account/savedAddress'),
+}
+
+const Orders = {
+  list: () => requests.get('orders'),
+  getOrderById: (id: number) => requests.get(`orders/${id}`),
+  create: (values: any) => requests.post('orders', values),
+}
+
 //TestErrors
 const TestErrors = {
   get400Error: () => requests.get('buggy/bad-request'),
@@ -106,6 +124,8 @@ const requestAgent = {
   Catalog,
   TestErrors,
   Basket,
+  Account,
+  Orders,
 }
 
 export default requestAgent

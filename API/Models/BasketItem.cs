@@ -9,13 +9,14 @@ namespace API.Models
   {
     public int Id { get; set; }
     public int Quantity { get; set; }
-    //navigation property
+
+    //navigation prop
     //basketItem : product = 1:1
     public int ProductId { get; set; }
-  
     public Product Product { get; set; }
 
-    //fully defined relationship with Basket
+    //relationship with Basket
+    // 1:M = basket : basketItems
     public int BasketId { get; set; }
     public Basket Basket { get; set; }
   }

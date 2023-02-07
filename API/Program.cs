@@ -1,6 +1,9 @@
 using System;
+using System.Threading.Tasks;
 using API.Data;
+using API.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,28 +13,32 @@ namespace API
 {
   public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
           //create server for runing api
             var host = CreateHostBuilder(args).Build();
+
             //create a scope
             using var scope = host.Services.CreateScope();
-            //assign two services to scope
+
+            //assign services to scope
             var context = scope.ServiceProvider.GetRequiredService<StoreContext>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
             try
             {
               //create database
-              context.Database.Migrate();
+              await context.Database.MigrateAsync();
               //seeding data
-              DbInitializer.Initialize(context);
+              await  DbInitializer.Initialize(context, userManager);
+
             }
             catch (Exception ex)
             {
               logger.LogError(ex,"Problem of migrating data");
             }
            
-           host.Run();
+           await host.RunAsync();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

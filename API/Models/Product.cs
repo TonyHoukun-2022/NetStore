@@ -6,7 +6,6 @@ namespace API.Entities
 
   public class Product
     {
-        //Properties
         //public properties accessible across app
         //getter setter means we can get and set properties across app
         [Key]

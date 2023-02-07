@@ -1,8 +1,8 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
 using API.DataTransferObjects;
+using API.Extensions;
 using API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,52 +20,62 @@ namespace API.Controllers
 
       //use the buyerId stored in Cookies to find out relavant basket, and return basket with its basketItems
       //FirstofDefault method return found first one or null if not found. 
-      private async Task<Basket> RetrieveBasket()
+      private async Task<Basket> RetrieveBasket(string buyerId)
       {
+        //if no buyerId passed in, delete cookie and return null as Basket
+        if(string.IsNullOrEmpty(buyerId))
+        {
+          Response.Cookies.Delete("buyerId");
+          return null;
+        }
+
+        //return basket associated with passed in buyerId
         return await _context.Baskets
           .Include(basket => basket.Items)
           .ThenInclude(basketItem => basketItem.Product)
-          .FirstOrDefaultAsync(x => x.BuyerId == Request.Cookies["buyerId"]);
+          //where the buyerId in basket == buyerid
+          .FirstOrDefaultAsync(x => x.BuyerId == buyerId);
       }
 
+      private string GetBuyerId()
+      {
+        //if user is logged in, has token, then use username from claims for buyerid
+        //if not logged in, claim is null, return buyerId
+        //if both are null, return null
+        //return username, buyerId or null
+        return User.Identity.Name ?? Request.Cookies["buyerId"];
+      }
+
+      /** 
+         if user is logged in, has usename as Name prop in user obj, which is provide with useAuthentication service,
+         then return the basket associated with that user
+         if no logged in, use guid as buyerid, and create a annonymous basket 
+      */
        private Basket CreateBasket()
       {
-        //generate unique buyerId
-        var buyerId = Guid.NewGuid().ToString();
-        var cookieOpts = new CookieOptions{
-          IsEssential = true,
-          Expires = DateTime.Now.AddDays(30)
-        };
+        //set buyerId as usename from user obj
+        var buyerId = User.Identity?.Name;
 
-        //add buyerId Cookie
-        Response.Cookies.Append("buyerId",buyerId, cookieOpts);
-
+        //if buyerId is null, set it to unique id, and set cookie
+        if(string.IsNullOrEmpty(buyerId))
+        {
+          buyerId = Guid.NewGuid().ToString();
+          var cookieOpts = new CookieOptions{
+            IsEssential = true,
+            Expires = DateTime.Now.AddDays(30)
+          };
+          //set buyerId into Cookie
+          Response.Cookies.Append("buyerId",buyerId, cookieOpts);
+        }
+      
         //except buyerId, all other fields of basket are predefined by EF
         var basket = new Basket{BuyerId = buyerId};
 
         //save to db
         _context.Baskets.Add(basket);
+
         return basket;
       }
-
-      private BasketDto MapBasketToDto(Basket basket)
-        {
-            return new BasketDto
-            {
-                Id = basket.Id,
-                BuyerId = basket.BuyerId,
-                Items = basket.Items.Select(item => new BasketItemDto
-                {
-                    ProductId = item.ProductId,
-                    Name = item.Product.Name,
-                    Price = item.Product.Price,
-                    PictureUrl = item.Product.PictureUrl,
-                    Type = item.Product.Type,
-                    Brand = item.Product.Brand,
-                    Quantity = item.Quantity
-                }).ToList()
-            };
-        }
 
     //END POINTS
 
@@ -73,19 +83,19 @@ namespace API.Controllers
     public async Task<ActionResult<BasketDto>> GetBasket()
     {
       //applied RetrieveBasket method
-      var basket = await RetrieveBasket();
+      var basket = await RetrieveBasket(GetBuyerId());
 
       if (basket == null) return NotFound();
 
       //return BasketDto type to avoid object cycle error caused by data relationship
-      return MapBasketToDto(basket);
+      return basket.MapBasketToDto();
     }
     
     [HttpPost] // api/basket?productId=3&quantity=2
     public async Task<ActionResult<BasketDto>> AddItemToBasket(int productId, int quantity)
     {
       //get basket || create basket
-      var basket = await RetrieveBasket();
+      var basket = await RetrieveBasket(GetBuyerId());
 
       if(basket == null) basket = CreateBasket();
 
@@ -103,7 +113,7 @@ namespace API.Controllers
     
       //save changes
       //createdAtRoute(location header (the uri), res body)
-      if(result) return CreatedAtRoute("GetBasket", MapBasketToDto(basket));
+      if(result) return CreatedAtRoute("GetBasket", basket.MapBasketToDto());
 
       //if result is false, nothing change saved, return bad request
       return BadRequest(
@@ -118,7 +128,7 @@ namespace API.Controllers
     public async Task<ActionResult> RemoveBasketItem(int productId, int quantity)
     {
       //get basket
-      var basket = await RetrieveBasket();
+      var basket = await RetrieveBasket(GetBuyerId());
 
       if (basket == null) return NotFound();
 

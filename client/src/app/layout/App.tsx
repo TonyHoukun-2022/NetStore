@@ -1,5 +1,5 @@
 import { Container, createTheme, CssBaseline, ThemeProvider } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Catalog from "../../features/catalog/Catalog";
 import Header from "./Header";
 import { Routes, Route } from "react-router-dom";
@@ -14,12 +14,15 @@ import ServerError from "../errors/ServerError";
 import NotFound from "../errors/NotFound";
 import BasketPage from "../../features/basket/BasketPage";
 // import { useStoreContext } from "../context/StoreContext";
-import { getCookie } from "../utils/util";
-import requestAgent from "../api/agent";
 import LoadingComponent from "./LoadingComponent";
 import CheckoutPage from "../../features/checkout/CheckoutPage";
 import { useAppDispatch } from "../store/configureStore";
-import { setBasket } from "../../features/basket/BasketSlice";
+import { fetchBasketAsync } from "../../features/basket/BasketSlice";
+import Login from "../../features/account/Login";
+import Register from "../../features/account/Register";
+import { getCurrentUser } from "../../features/account/AccountSlice";
+import { ProtectedRoutes } from "./ProtectedRoute";
+import OrdersPage from "../../features/orders/OrdersPage";
 
 function App() {
   /** use context */
@@ -29,21 +32,41 @@ function App() {
   const dispatch = useAppDispatch()
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    const buyerId = getCookie('buyerId')
-    if (buyerId) {
-      setLoading(true)
-      requestAgent.Basket.get()
-        /** set basket to app context */
-        // .then(basket => setBasket(basket))
-
-        /** set basket with redux */
-        //dispatch(action(payload))
-        .then(basket => dispatch(setBasket(basket)))
-        .catch(error => console.log(error))
-        .finally(() => setLoading(false))
+  //memorize the initApp for every render, so the initApp in useEffect dependency not changes
+  const initApp = useCallback(async () => {
+    try {
+      //run only when buyerid in Cookie
+      await dispatch(fetchBasketAsync())
+      //run only when user token existed 
+      await dispatch(getCurrentUser())
+    } catch (error) {
+      console.log(error)
     }
   }, [dispatch])
+
+  useEffect(() => {
+    setLoading(true)
+    initApp().then(() => setLoading(false))
+  }, [initApp])
+
+  // useEffect(() => {
+  //   const buyerId = getCookie('buyerId')
+  //   if (buyerId) {
+  //     setLoading(true)
+  //     requestAgent.Basket.get()
+  //       /** set basket to app context */
+  //       // .then(basket => setBasket(basket))
+
+  //       /** set basket with redux */
+  //       //dispatch(action(payload))
+  //       .then(basket => dispatch(setBasket(basket)))
+  //       .catch(error => console.log(error))
+  //       .finally(() => setLoading(false))
+  //   }
+  // }, [dispatch])
+
+  //get current user when refresh page && localstorage has 'user' token
+
 
   const [darkMode, setDarkMode] = useState(false);
   const paletteType = darkMode ? 'dark' : 'light'
@@ -81,7 +104,13 @@ function App() {
           <Route path='about' element={<AboutPage />} />
           <Route path='contact' element={<ContactPage />} />
           <Route path='basket' element={<BasketPage />} />
-          <Route path='checkout' element={<CheckoutPage />} />
+          {/* only logged in user can access */}
+          <Route element={<ProtectedRoutes />}>
+            <Route path='checkout' element={<CheckoutPage />} />
+            <Route path='orders' element={<OrdersPage />} />
+          </Route>
+          <Route path='login' element={<Login />} />
+          <Route path='register' element={<Register />} />
           <Route path='server-error' element={<ServerError />} />
           <Route path='*' element={<NotFound />} />
         </Routes>
