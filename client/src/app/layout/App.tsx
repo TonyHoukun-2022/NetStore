@@ -15,7 +15,6 @@ import NotFound from "../errors/NotFound";
 import BasketPage from "../../features/basket/BasketPage";
 // import { useStoreContext } from "../context/StoreContext";
 import LoadingComponent from "./LoadingComponent";
-import CheckoutPage from "../../features/checkout/CheckoutPage";
 import { useAppDispatch } from "../store/configureStore";
 import { fetchBasketAsync } from "../../features/basket/BasketSlice";
 import Login from "../../features/account/Login";
@@ -23,6 +22,7 @@ import Register from "../../features/account/Register";
 import { getCurrentUser } from "../../features/account/AccountSlice";
 import { ProtectedRoutes } from "./ProtectedRoute";
 import OrdersPage from "../../features/orders/OrdersPage";
+import CheckoutWrapper from "../../features/checkout/CheckoutWrapper";
 
 function App() {
   /** use context */
@@ -106,7 +106,7 @@ function App() {
           <Route path='basket' element={<BasketPage />} />
           {/* only logged in user can access */}
           <Route element={<ProtectedRoutes />}>
-            <Route path='checkout' element={<CheckoutPage />} />
+            <Route path='checkout' element={<CheckoutWrapper />} />
             <Route path='orders' element={<OrdersPage />} />
           </Route>
           <Route path='login' element={<Login />} />

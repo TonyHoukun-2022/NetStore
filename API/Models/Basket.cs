@@ -14,6 +14,11 @@ namespace API.Models
         //navigation prop
         public List<BasketItem> Items { get; set; } = new List<BasketItem>();
 
+        //2 props for incoprate stripe
+        public string PaymentIntentId { get; set; }
+
+        public string ClientSecret { get; set; }
+
         public void AddItem(Product product, int quantity) 
         {
           // if product to be added is not in the basket items list,

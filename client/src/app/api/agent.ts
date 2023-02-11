@@ -111,6 +111,10 @@ const Orders = {
   create: (values: any) => requests.post('orders', values),
 }
 
+const Payment = {
+  createPaymentIntent: () => requests.post('payment', {}),
+}
+
 //TestErrors
 const TestErrors = {
   get400Error: () => requests.get('buggy/bad-request'),
@@ -126,6 +130,7 @@ const requestAgent = {
   Basket,
   Account,
   Orders,
+  Payment,
 }
 
 export default requestAgent

@@ -476,6 +476,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 NetStore/API/appsettings.json
+NetStore/API/appsettings.Development.json
 API/store.db-shm
 API/store.db-wal
 

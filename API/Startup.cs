@@ -96,8 +96,11 @@ namespace API
               });
             services.AddAuthorization();
 
-            //apply scope token service
+            //apply token service
             services.AddScoped<TokenService>();
+
+            //apply stripe payment service
+            services.AddScoped<PaymentService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
