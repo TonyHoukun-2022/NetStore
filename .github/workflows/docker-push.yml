@@ -25,4 +25,4 @@ jobs:
         with:
           context: "{{defaultContext}}:API"
           push: true
-          tags: tonyairi/restore:latest
+          tags: tonyairi/netstore:latest
