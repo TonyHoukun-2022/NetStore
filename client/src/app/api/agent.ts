@@ -7,7 +7,9 @@ import { store } from '../store/configureStore'
 //mocking slow response (for testing purpose)
 const delay = () => new Promise((resolve) => setTimeout(resolve, 500))
 
-axios.defaults.baseURL = 'http://localhost:5000/api/'
+//develop mode => pick up env variable from .env.development
+//production mode => variable from .env.production
+axios.defaults.baseURL = process.env.REACT_APP_API_URL
 //allow user set cookie
 axios.defaults.withCredentials = true
 
@@ -23,6 +25,7 @@ axios.interceptors.request.use((config) => {
 //set axios interceptor for response
 axios.interceptors.response.use(
   async (response: AxiosResponse) => {
+    if (process.env.NODE_ENV === 'development') await delay()
     //shoud use sml case for reading header name
     const pagination = response.headers['pagination']
     if (pagination) {

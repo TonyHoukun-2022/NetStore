@@ -95,26 +95,34 @@ function App() {
         darkMode={darkMode}
         handleTheme={handleThemeChange}
       />
-      <Container>
-        <Routes>
-          {/* similar to path='/' */}
-          <Route index element={<HomePage />} />
-          <Route path="catalog" element={<Catalog />} />
-          <Route path="catalog/:id" element={<ProductDetails />} />
-          <Route path='about' element={<AboutPage />} />
-          <Route path='contact' element={<ContactPage />} />
-          <Route path='basket' element={<BasketPage />} />
-          {/* only logged in user can access */}
-          <Route element={<ProtectedRoutes />}>
-            <Route path='checkout' element={<CheckoutWrapper />} />
-            <Route path='orders' element={<OrdersPage />} />
-          </Route>
-          <Route path='login' element={<Login />} />
-          <Route path='register' element={<Register />} />
-          <Route path='server-error' element={<ServerError />} />
-          <Route path='*' element={<NotFound />} />
-        </Routes>
-      </Container>
+      <Routes>
+        {/* similar to path='/' */}
+        <Route index element={<HomePage />} />
+        <Route
+          path="*"
+          element={
+            <Container sx={{ mt: 4 }}>
+              <Routes>
+                <Route path="catalog" element={<Catalog />} />
+                <Route path="catalog/:id" element={<ProductDetails />} />
+                <Route path='about' element={<AboutPage />} />
+                <Route path='contact' element={<ContactPage />} />
+                <Route path='basket' element={<BasketPage />} />
+                {/* only logged in user can access */}
+                <Route element={<ProtectedRoutes />}>
+                  <Route path='checkout' element={<CheckoutWrapper />} />
+                  <Route path='orders' element={<OrdersPage />} />
+                </Route>
+                <Route path='login' element={<Login />} />
+                <Route path='register' element={<Register />} />
+                <Route path='server-error' element={<ServerError />} />
+                <Route path='*' element={<NotFound />} />
+              </Routes>
+            </Container>
+          }
+        />
+      </Routes>
+
     </ThemeProvider>
   );
 }

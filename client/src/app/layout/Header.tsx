@@ -47,7 +47,7 @@ const Header = ({ darkMode, handleTheme }: Props) => {
 
   return (
     //margin bottom is 4*8 = 32px
-    <AppBar position='static' sx={{ mb: 4 }}>
+    <AppBar position='static'>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         {/* navbar left  */}
         <Box display='flex' alignItems='center'>
