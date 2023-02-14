@@ -1,4 +1,4 @@
-# fly.toml file generated for netstore on 2023-02-14T18:36:34+11:00
+# fly.toml file generated for netstore on 2023-02-14T19:31:11+11:00
 
 app = "netstore"
 kill_signal = "SIGINT"
@@ -6,11 +6,11 @@ kill_timeout = 5
 processes = []
 
 [build]
-  image = "tonyairi/netstore:latest"
+  image = "tonyairi/restore:latest"
 
 [env]
-  ASPNETCORE_URLS="http://+:8080"
-  StripeSettings__PublishableKey="pk_test_51MYqZpB8GgttUliNyEmfMbKIiCBO9Qo09nzn7PuGrYxCxDThqDdyFz20QutWBm0bdUGsiYZOieSGl29LS5b3skQo00Kj9jH4Cq"
+  ASPNETCORE_URLS = "http://+:8080"
+  StripeSettings__PublishableKey = "pk_test_51MYqZpB8GgttUliNyEmfMbKIiCBO9Qo09nzn7PuGrYxCxDThqDdyFz20QutWBm0bdUGsiYZOieSGl29LS5b3skQo00Kj9jH4Cq"
 
 [experimental]
   auto_rollback = true
