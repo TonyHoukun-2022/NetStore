@@ -18,5 +18,7 @@ namespace API.Entities
         public string Type { get; set; }
         public string Brand { get; set; }
         public int QuantityInStock { get; set; }
+        //created frin cloudinary after upload img
+        public string PublicId { get; set; }
     }
 }

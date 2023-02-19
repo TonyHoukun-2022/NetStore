@@ -4,6 +4,7 @@ using System.Text;
 using API.Data;
 using API.Middleware;
 using API.Models;
+using API.RequestHelpers;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -33,6 +34,8 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            //automapper
+            services.AddAutoMapper(typeof(MappingProfiles).Assembly);
             //swagger
             services.AddSwaggerGen(c =>
             {
@@ -134,9 +137,11 @@ namespace API
 
             //apply stripe payment service
             services.AddScoped<PaymentService>();
+
+            //cloudinary image service
+            services.AddScoped<ImageService>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         // Middlewares
         //Middleware ordering
         //exception handler -> Routing -> CORS -> authenticate -> authorize -> custom middlewares -> endpoint

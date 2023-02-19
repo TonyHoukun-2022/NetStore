@@ -74,6 +74,14 @@ const Header = ({ darkMode, handleTheme }: Props) => {
               {title.toUpperCase()}
             </ListItem>
           ))}
+          {user && user.roles?.includes('Admin') && <ListItem
+            component={NavLink}
+            to={'/inventory'}
+            sx={navStyles}
+          >
+            INVENTORY
+          </ListItem>
+          }
         </List>
         {/* navbar right  */}
         <Box display='flex' alignItems='center'>
