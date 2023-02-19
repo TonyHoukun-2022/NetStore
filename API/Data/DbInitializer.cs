@@ -18,14 +18,24 @@ namespace API.Data
           if(!userManager.Users.Any())
           {
             //create a admin & member user
-            var admin = new User
+            var admin1 = new User
             {
               UserName = "tony",
               Email = "tony@test.com"
             };
 
-            await userManager.CreateAsync(admin,"Pa$$w0rd");
-            await userManager.AddToRolesAsync(admin, new[] {"Member", "Admin"});
+            await userManager.CreateAsync(admin1,"Pa$$w0rd");
+            await userManager.AddToRolesAsync(admin1, new[] {"Member", "Admin"});
+
+            //create another admin & member user
+            var admin2 = new User
+            {
+              UserName = "admin",
+              Email = "admin@test.com"
+            };
+
+            await userManager.CreateAsync(admin2,"Pa$$w0rd");
+            await userManager.AddToRolesAsync(admin2, new[] {"Member", "Admin"});
 
             //create a member user
             var user = new User

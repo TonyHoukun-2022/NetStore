@@ -11,6 +11,8 @@ processes = []
 [env]
   ASPNETCORE_URLS = "http://+:8080"
   StripeSettings__PublishableKey="pk_test_51MYqZpB8GgttUliNyEmfMbKIiCBO9Qo09nzn7PuGrYxCxDThqDdyFz20QutWBm0bdUGsiYZOieSGl29LS5b3skQo00Kj9jH4Cq"
+  Cloudinary__CloudName="dsslmg681"
+  Cloudinary__ApiKey="966792596751131"
 
 [experimental]
   auto_rollback = true
