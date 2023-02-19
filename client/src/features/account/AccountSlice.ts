@@ -74,6 +74,13 @@ export const accountSlice = createSlice({
       history.push('/')
     },
     setUser: (state, action) => {
+      //atob => transfter base 64 code of the payload inside the jwt token
+      let jwtPayload = JSON.parse(atob(action.payload.token.split('.')[1]))
+      let roles = jwtPayload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+      state.user = {
+        ...action.payload,
+        roles: typeof roles === 'string' ? [roles] : roles,
+      }
       state.user = action.payload
     },
   },
@@ -87,7 +94,13 @@ export const accountSlice = createSlice({
     })
     //since the return type of two thunks are the same, so can use addMatcher
     builder.addMatcher(isAnyOf(signIn.fulfilled, getCurrentUser.fulfilled), (state, action) => {
-      state.user = action.payload
+      //atob => transfter base 64 code of the payload inside the jwt token
+      let jwtPayload = JSON.parse(atob(action.payload.token.split('.')[1]))
+      let roles = jwtPayload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+      state.user = {
+        ...action.payload,
+        roles: typeof roles === 'string' ? [roles] : roles,
+      }
     })
     builder.addMatcher(isAnyOf(signIn.rejected), (state, action) => {
       throw action.payload

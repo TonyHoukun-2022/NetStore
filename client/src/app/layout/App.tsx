@@ -23,6 +23,7 @@ import { getCurrentUser } from "../../features/account/AccountSlice";
 import { ProtectedRoutes } from "./ProtectedRoute";
 import OrdersPage from "../../features/orders/OrdersPage";
 import CheckoutWrapper from "../../features/checkout/CheckoutWrapper";
+import Inventory from "../../features/admin/Inventory";
 
 function App() {
   /** use context */
@@ -108,10 +109,14 @@ function App() {
                 <Route path='about' element={<AboutPage />} />
                 <Route path='contact' element={<ContactPage />} />
                 <Route path='basket' element={<BasketPage />} />
-                {/* only logged in user can access */}
+                {/* authenticated routes */}
                 <Route element={<ProtectedRoutes />}>
                   <Route path='checkout' element={<CheckoutWrapper />} />
                   <Route path='orders' element={<OrdersPage />} />
+                </Route>
+                {/* admin route  */}
+                <Route element={<ProtectedRoutes roles={['Admin']} />}>
+                  <Route path='inventory' element={<Inventory />} />
                 </Route>
                 <Route path='login' element={<Login />} />
                 <Route path='register' element={<Register />} />
